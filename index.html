@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CW Battle Royale</title>
+  <meta name="description" content="CW 배틀 로얄 팬 페이지 — 레이더, 섬 지도, 학생 명부" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@700;900&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#roster">명부로 건너뛰기</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1 id="game-title">CW BATTLE ROYALE</h1>
+        <p class="brand-sub"><span id="class-label"></span> · 프로그램 진행 중</p>
+      </div>
+    </div>
+    <dl class="hud-stats">
+      <div><dt>DAY</dt><dd id="stat-day">-</dd></div>
+      <div><dt>TIME</dt><dd id="stat-time">-</dd></div>
+      <div><dt>생존</dt><dd id="stat-alive" class="ok">-</dd></div>
+      <div><dt>탈락</dt><dd id="stat-dead" class="bad">-</dd></div>
+    </dl>
+  </header>
+
+  <main class="board">
+    <!-- 상단: 방송 / 공지 -->
+    <section class="panel panel-broadcast" aria-labelledby="h-broadcast">
+      <header class="panel-head">
+        <h2 id="h-broadcast"><span class="live-dot" aria-hidden="true"></span>정기 방송</h2>
+        <span class="tag">BROADCAST</span>
+      </header>
+      <ol id="broadcast-list" class="broadcast-list"></ol>
+    </section>
+
+    <section class="panel panel-notice" aria-labelledby="h-notice">
+      <header class="panel-head">
+        <h2 id="h-notice">규칙 · 공지</h2>
+        <span class="tag">RULES</span>
+      </header>
+      <ul id="notice-list" class="notice-list"></ul>
+    </section>
+
+    <!-- 중단: 레이더 / 명부 / 지도 -->
+    <section class="panel panel-radar" aria-labelledby="h-radar">
+      <header class="panel-head">
+        <h2 id="h-radar">레이더</h2>
+        <span class="tag" id="radar-target">TARGET: -</span>
+      </header>
+      <div class="radar-wrap">
+        <svg id="radar" class="radar" viewBox="-110 -110 220 220" role="img" aria-label="선택한 학생 주변의 생존자 레이더">
+          <defs>
+            <radialGradient id="sweepGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="var(--radar)" stop-opacity="0.5" />
+              <stop offset="1" stop-color="var(--radar)" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <circle r="100" class="r-ring r-outer" />
+          <circle r="75" class="r-ring" />
+          <circle r="50" class="r-ring" />
+          <circle r="25" class="r-ring" />
+          <line x1="-100" y1="0" x2="100" y2="0" class="r-axis" />
+          <line x1="0" y1="-100" x2="0" y2="100" class="r-axis" />
+          <g class="r-sweep"><path d="M0 0 L0 -100 A100 100 0 0 1 70.7 -70.7 Z" fill="url(#sweepGrad)" /></g>
+          <g id="radar-blips"></g>
+          <circle r="3.5" class="r-center" />
+        </svg>
+      </div>
+      <p class="radar-legend" id="radar-legend">명부에서 학생을 선택하세요</p>
+    </section>
+
+    <section class="panel panel-roster" id="roster" aria-labelledby="h-roster">
+      <header class="panel-head">
+        <h2 id="h-roster">학생 명부</h2>
+        <div class="filters" role="group" aria-label="상태 필터">
+          <button class="chip is-on" data-filter="all" aria-pressed="true">전체</button>
+          <button class="chip" data-filter="alive" aria-pressed="false">생존</button>
+          <button class="chip" data-filter="hurt" aria-pressed="false">부상</button>
+          <button class="chip" data-filter="dead" aria-pressed="false">탈락</button>
+        </div>
+      </header>
+      <ul id="roster-grid" class="roster-grid"></ul>
+      <div class="search">
+        <label for="search-input" class="sr-only">이름, 번호, 무기 검색</label>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search-input" type="search" placeholder="이름 · 번호 · 무기 · 동아리 검색" autocomplete="off" />
+      </div>
+    </section>
+
+    <section class="panel panel-map" aria-labelledby="h-map">
+      <header class="panel-head">
+        <h2 id="h-map">섬 지도</h2>
+        <span class="tag">GRID A–J / 1–10</span>
+      </header>
+      <div class="map-wrap">
+        <div id="map" class="map" role="grid" aria-label="섬 지도 격자"></div>
+      </div>
+      <ul class="map-legend">
+        <li><i class="lg lg-danger"></i>금지구역</li>
+        <li><i class="lg lg-next"></i>예정</li>
+        <li><i class="lg lg-alive"></i>생존</li>
+        <li><i class="lg lg-dead"></i>탈락</li>
+      </ul>
+    </section>
+
+    <!-- 하단: 능력치 / 상세 -->
+    <section class="panel panel-stats" aria-labelledby="h-stats">
+      <header class="panel-head">
+        <h2 id="h-stats">능력치</h2>
+        <span class="tag">STATUS HEX</span>
+      </header>
+      <svg id="hex" class="hex" viewBox="-130 -120 260 240" role="img" aria-label="선택한 학생 능력치 육각형 차트"></svg>
+    </section>
+
+    <section class="panel panel-detail" aria-labelledby="h-detail" aria-live="polite">
+      <header class="panel-head">
+        <h2 id="h-detail">학생 정보</h2>
+        <span class="tag" id="detail-no">FILE</span>
+      </header>
+      <div id="detail" class="detail"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>비공식 팬 페이지 · 시안 v0.1 · 모든 인물/설정은 임시 데이터입니다.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
