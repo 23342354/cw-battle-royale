@@ -5,29 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CW Battle Royale</title>
   <meta name="description" content="CW 배틀 로얄 팬 페이지. 레이더, 섬 지도, 출석부를 한 화면에서 봅니다." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="scene.css" />
-  <link rel="stylesheet" href="lcd.css" />
+  <link rel="stylesheet" href="pixel.css" />
 </head>
 <body>
   <a class="skip" href="#roster">출석부로 건너뛰기</a>
 
-  <div class="room">
-  <div class="calendar" aria-hidden="true">
-    <span class="cal-ring"></span>
-    <strong>11월</strong>
-    <span class="cal-grid" id="cal-grid"></span>
-  </div>
-  <div class="monitor">
-    <div class="sticky sticky-yellow" id="note-zones" aria-hidden="true"></div>
-    <div class="sticky sticky-pink" aria-hidden="true"><span class="tape"></span>18:00 방송<br>꼭 듣기!!</div>
-    <div class="sticky sticky-blue" aria-hidden="true">믿지 마<br><u>아무도.</u></div>
-    <div class="bezel">
-      <div class="screen">
+  <div class="stage" id="stage">
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div class="note note-yellow" id="note-zones" aria-hidden="true"></div>
+    <div class="note note-pink" aria-hidden="true">18:00 방송<br>꼭 듣기!!</div>
+    <div class="screen" id="screen">
         <div class="screen-scroll" tabindex="-1">
 
   <header class="topbar">
@@ -128,50 +117,11 @@
           <i class="stuck-line"></i>
           <i class="band"></i>
         </div>
-      </div>
     </div>
-    <div class="chin" aria-hidden="true">
-      <span class="chin-brand">CW-1503T <small>15" TFT</small></span>
-      <span class="sticker">검수필<br>2003.04</span>
-      <span class="controls">
-        <span class="osd">메뉴</span><span class="osd">◀</span><span class="osd">▶</span><span class="osd">자동</span>
-        <span class="power"><span class="led"></span></span>
-      </span>
-    </div>
-  </div>
-  <div class="stand" aria-hidden="true"><span class="neck"></span><span class="base"></span></div>
-
-  <!-- 책상 + 소품 (장식) -->
-  <div class="desk" aria-hidden="true">
-   <div class="desk-plane">
-    <div class="keyboard" id="keyboard"></div>
-    <div class="prop folder">
-      <span class="folder-tab">3-B</span>
-      <span class="folder-sheet"></span>
-      <span class="folder-label">프로그램 대상자 명단<small>3학년 B반 · 20명</small></span>
-      <span class="stamp">기밀</span>
-    </div>
-    <div class="prop paper">
-      <span class="clip"></span>
-      <strong>정기 방송 기록</strong>
-      <span class="paper-lines" id="paper-lines"></span>
-    </div>
-    <div class="prop polaroid">
-      <span class="photo"><i></i><i></i><i></i><i></i><i></i></span>
-      <span class="caption">수학여행 전날</span>
-    </div>
-    <div class="prop pen"></div>
-    <div class="prop desk-note" id="desk-note"></div>
-    <span class="desk-light"></span>
-   </div>
-    <div class="mug"><span class="coffee"></span><span class="steam"></span><span class="steam"></span><span class="steam"></span></div>
-  </div>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="photo-fx" aria-hidden="true"></div>
-  <div class="datestamp" aria-hidden="true">'03 11 22&nbsp;&nbsp;18:04</div>
   </div>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="scene.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────
    CW BATTLE ROYALE — 프로그램 관리 시스템 2.1
    2003년쯤의 낡은 15인치 LCD에서 돌아가는 관공서 프로그램.
-   화면 안 = 이 파일, 모니터 · 책상 · 열화 효과 = scene.css + lcd.css
+   화면 안 = 이 파일, 모니터 밖 픽셀 아트 = scene.js + pixel.css
    글꼴: 갈무리(픽셀). 크기는 12px / 15px / 30px 배수로만 써서 픽셀이 뭉개지지 않게.
    ───────────────────────────────────────────── */
 
@@ -54,122 +54,6 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: none;
   font-smooth: never;
-}
-
-/* ── Room + Monitor (모니터 밖에서 보는 뷰) ── */
-body {
-  background:
-    radial-gradient(900px 520px at 50% 38%, rgba(255, 170, 60, .16), transparent 70%),
-    linear-gradient(180deg, #08080f 0%, #0c0b17 62%, #15131f 62%, #0a0910 100%);
-  background-attachment: fixed;
-}
-.room {
-  position: relative;
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-  padding: 28px 0 0;
-  overflow: hidden;
-}
-.monitor {
-  width: min(1400px, 100% - 210px);
-  position: relative;
-  border-radius: 26px;
-  padding: 22px 22px 0;
-  background:
-    linear-gradient(180deg, #2a2933 0%, #1a1921 45%, #141319 100%);
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, .08),
-    inset 0 -3px 6px rgba(0, 0, 0, .6),
-    0 40px 80px -20px rgba(0, 0, 0, .9),
-    0 0 120px rgba(255, 170, 60, .14);
-  z-index: 2;
-}
-.bezel {
-  border-radius: 18px;
-  padding: 10px;
-  background: #07070c;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05), inset 0 6px 14px rgba(0, 0, 0, .9);
-}
-.screen {
-  position: relative;
-  height: calc(100dvh - 300px);
-  min-height: 400px;
-  border-radius: 22px / 28px;
-  overflow: hidden;
-  background: var(--glass);
-  isolation: isolate;
-}
-.screen-scroll {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background:
-    radial-gradient(ellipse 80% 70% at 50% 45%, #1d1308, var(--glass) 75%);
-  scrollbar-width: thin;
-  scrollbar-color: var(--soot) transparent;
-  animation: crt-on .9s var(--ease) both;
-  transform-origin: center;
-}
-.screen-scroll:focus { outline: none; }
-@keyframes crt-on {
-  0%   { transform: scale(1, .004); filter: brightness(4); opacity: .2; }
-  45%  { transform: scale(1, .004); filter: brightness(4); opacity: 1; }
-  70%  { transform: scale(1, 1.02); filter: brightness(1.6); }
-  100% { transform: scale(1, 1); filter: brightness(1); }
-}
-/* glass: scanlines + vignette + curvature + glare */
-.screen-fx {
-  position: absolute; inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  z-index: 30;
-  background:
-    linear-gradient(125deg, rgba(255, 255, 255, .07) 0%, rgba(255, 255, 255, .02) 22%, transparent 38%),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px),
-    radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, .55) 100%);
-  box-shadow:
-    inset 0 0 60px rgba(0, 0, 0, .75),
-    inset 0 0 6px rgba(255, 181, 71, .2);
-}
-
-.chin {
-  height: 58px;
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  padding: 0 14px;
-  color: #6f6c80;
-}
-.chin-brand { font-family: var(--font-term); font-weight: 700; font-size: 13px; letter-spacing: .2em; color: #8b88a0; }
-.chin-brand b { color: var(--phosphor); }
-.chin-brand small { font-family: var(--font-term); font-weight: 400; font-size: 10px; letter-spacing: .14em; color: #5d5a6e; margin-left: 6px; }
-.grill {
-  width: 160px; height: 10px;
-  background: repeating-linear-gradient(90deg, #0b0a10 0 3px, transparent 3px 6px);
-  border-radius: 3px; opacity: .8;
-}
-.controls { justify-self: end; display: flex; align-items: center; gap: 12px; }
-.knob {
-  width: 16px; height: 16px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #4a4858, #1c1b23 70%);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 255, 255, .12);
-}
-.power { display: flex; align-items: center; gap: 6px; font-family: var(--font-term); font-size: 10px; letter-spacing: .14em; }
-.led {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--color-ok);
-  box-shadow: 0 0 6px var(--color-ok), 0 0 14px rgba(74, 222, 128, .6);
-}
-
-.stand { display: flex; flex-direction: column; align-items: center; margin-top: -2px; z-index: 1; }
-.neck {
-  width: 140px; height: 40px;
-  background: linear-gradient(90deg, #121118, #24232c 50%, #121118);
-  clip-path: polygon(14% 0, 86% 0, 100% 100%, 0 100%);
-}
-.base {
-  width: 380px; height: 16px; border-radius: 50% / 100% 100% 0 0;
-  background: linear-gradient(180deg, #2a2933, #121118);
-  box-shadow: 0 18px 30px rgba(0, 0, 0, .8);
 }
 
 .sr-only {
@@ -476,34 +360,7 @@ h1 small { font-size: 12px; font-weight: 400; color: #cfd8e6; margin-left: 6px; 
 .status-line strong { color: var(--ok); }
 .foot-note { margin: 0; padding: 0 8px; color: var(--ink-dim); }
 
-/* ── Sticky notes on the monitor ───── */
-.sticky {
-  position: absolute; z-index: 40;
-  width: 112px; min-height: 104px;
-  padding: 14px 10px 10px;
-  font-family: "Nanum Pen Script", cursive;
-  font-size: 23px; line-height: 1.05;
-  color: #2a2340;
-  box-shadow: 0 10px 14px -6px rgba(0, 0, 0, .7), inset 0 -18px 20px -18px rgba(0, 0, 0, .25);
-  pointer-events: none;
-}
-.sticky::after { /* curled corner */
-  content: ""; position: absolute; right: 0; bottom: 0; width: 18px; height: 18px;
-  background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, .18) 50%);
-}
-.sticky-yellow { left: -94px; top: 64px; width: 122px; font-size: 22px; background: linear-gradient(180deg, #fde68a, #facc15); transform: rotate(-6deg); }
-.sticky-yellow b { color: #be123c; font-weight: 400; }
-.sticky-yellow s { color: #7c6a3a; }
-.sticky-pink { right: -86px; top: 26px; width: 104px; background: linear-gradient(180deg, #fbcfe8, #f472b6); transform: rotate(5deg); }
-.sticky-blue { right: -76px; bottom: 112px; width: 96px; min-height: 86px; background: linear-gradient(180deg, #bae6fd, #60a5fa); transform: rotate(-4deg); }
-.tape {
-  position: absolute; top: -10px; left: 50%; width: 54px; height: 18px;
-  transform: translateX(-50%) rotate(-3deg);
-  background: rgba(255, 255, 255, .45);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-}
-
-/* 책상, 소품, 실사 조명은 scene.css 에 있습니다 */
+/* 모니터 밖 픽셀 아트는 scene.js + pixel.css */
 
 /* ── 반응형 ────────────────────────── */
 /* 화면 안 배치는 모니터 화면 폭 기준 (container query) */
@@ -530,22 +387,6 @@ h1 small { font-size: 12px; font-weight: 400; color: #cfd8e6; margin-left: 6px; 
   .roster-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
   .search { flex: 1 1 100%; }
 }
-/* 모니터 본체 */
-@media (max-width: 1100px) {
-  .monitor { width: calc(100% - 150px); }
-  .sticky { font-size: 19px; }
-  .sticky-yellow { left: -64px; width: 98px; }
-  .sticky-pink { right: -70px; width: 92px; min-height: 90px; }
-}
-@media (max-width: 720px) {
-  .room { padding: 8px 8px 0; justify-content: flex-start; }
-  .monitor { width: 100%; padding: 10px 10px 0; border-radius: 18px; }
-  .bezel { padding: 5px; border-radius: 12px; }
-  .screen { height: calc(100dvh - 72px); min-height: 0; border-radius: 12px / 16px; }
-  .chin { height: 38px; grid-template-columns: 1fr auto; }
-  .grill, .knob, .chin-brand small, .stand, .desk, .sticky { display: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
