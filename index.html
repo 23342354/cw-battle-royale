@@ -12,11 +12,12 @@
 <body>
   <a class="skip" href="#roster">출석부로 건너뛰기</a>
 
-  <!-- 화면 내용을 붉은 형광체로 바꾸는 색 필터 -->
+  <!-- 화면 내용: 전부 회색조로, 진한 빨강(사망 X · 금지구역 · 본부)만 남기는 필터 -->
   <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
-    <filter id="phosphor" color-interpolation-filters="sRGB">
-      <feColorMatrix type="matrix" values="0.24 0.82 0.08 0 0.03  0.06 0.22 0.022 0 0.004  0.045 0.15 0.015 0 0.004  0 0 0 1 0" />
-      <feComponentTransfer><feFuncR type="gamma" amplitude="1.1" exponent="0.9" offset="0" /></feComponentTransfer>
+    <filter id="mono-red" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" type="saturate" values="0" result="gray" />
+      <feColorMatrix in="SourceGraphic" type="matrix" values="1.1 0 0 0 0  0 .9 0 0 0  0 0 .9 0 0  1.7 -1.7 -1.0 0 -0.1" result="red" />
+      <feComposite in="red" in2="gray" operator="over" />
     </filter>
   </svg>
 

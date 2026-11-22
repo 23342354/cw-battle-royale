@@ -1,10 +1,10 @@
 /* ─────────────────────────────────────────────
-   ROOM — 불 꺼진 방, 붉은 형광체 CRT 하나만 빛난다
+   ROOM — 불 꺼진 방, CRT 하나만 빛난다 (거의 흑백 + 빨강만 포인트)
    사실감은 디테일이 아니라 빛에서 온다:
-   · 광원은 화면 하나. 붉은 빛이 테두리 · 옆 패널 · 책상 · 공기(연무)에 번진다
+   · 광원은 화면 하나. 차가운 회백색 빛이 테두리 · 옆 패널 · 책상 · 공기(연무)에 번진다
    · 초점은 화면에. 뒤 책장, 앞 종이, 빨간 불빛은 흐리게(피사계 심도)
    · 필름 노이즈 + 강한 비네팅
-   화면 안 UI 는 styles.css (회색 프로그램) → #phosphor 필터로 붉은 단색이 됨
+   화면 안 UI 는 styles.css (회색 프로그램) → #mono-red 필터로 회색조, 진한 빨강만 남김
    ───────────────────────────────────────────── */
 
 :root {
@@ -12,19 +12,20 @@
   --sh: calc(var(--sw) * .75);
   --bz: calc(var(--sw) * .045);
   --side: calc(var(--sw) * .19);
-  --g: 255, 72, 52;     /* 붉은 형광 */
+  --g: 222, 226, 220;   /* 차가운 회백색 빛 */
+  --red: 196, 38, 30;
 
   --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  --fog: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='3' seed='5' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .3  0 0 0 0 .22  0 0 0 1.2 -.35'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
+  --fog: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='3' seed='5' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .86  0 0 0 0 .88  0 0 0 0 .86  0 0 0 1.2 -.35'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
   --grain-wood: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='.004 .12' numOctaves='4' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .85  0 0 0 0 .7  0 0 0 .5 -.12'/></filter><rect width='100%25' height='100%25' filter='url(%23w)'/></svg>");
 }
 
-html, body { height: 100%; overflow: hidden; background: #050303; }
+html, body { height: 100%; overflow: hidden; background: #050505; }
 .defs { position: absolute; width: 0; height: 0; }
 
 .room {
   position: fixed; inset: 0; overflow: hidden;
-  background: radial-gradient(ellipse 60% 55% at 52% 38%, #1c0b09, #080404 62%, #030202);
+  background: radial-gradient(ellipse 60% 55% at 52% 38%, #1b1c1b, #080808 62%, #030303);
   perspective: 1800px;
 }
 
@@ -37,11 +38,11 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
   opacity: .55;
   z-index: 0;
 }
-.shelf i { flex: 1; height: 70%; background: #18130f; border-radius: 3px; }
-.shelf i:nth-child(3n) { height: 88%; background: #1c1712; }
-.shelf i:nth-child(4n) { height: 62%; background: #12161a; }
-.shelf i:nth-child(5n) { height: 80%; background: #24120e; }
-.shelf i:nth-child(7n) { height: 92%; background: #20140f; }
+.shelf i { flex: 1; height: 70%; background: #171717; border-radius: 3px; }
+.shelf i:nth-child(3n) { height: 88%; background: #1c1c1b; }
+.shelf i:nth-child(4n) { height: 62%; background: #121313; }
+.shelf i:nth-child(5n) { height: 80%; background: #241413; }
+.shelf i:nth-child(7n) { height: 92%; background: #1a1a19; }
 .shelf::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4%; height: 5%; background: #0e0c0a; }
 
 /* ── 왼쪽: 꺼질 듯한 보조 모니터 ────── */
@@ -49,8 +50,8 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
   position: absolute; z-index: 1;
   left: 3vw; top: 20vh;
   width: 23vw; height: 46vh;
-  background: #080404;
-  border: 12px solid #110e0d;
+  background: #070707;
+  border: 12px solid #111111;
   border-radius: 4px;
   transform: rotateY(32deg);
   transform-origin: left center;
@@ -61,7 +62,7 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
 .monitor2 pre {
   margin: 14px 16px;
   font: 12px/1.6 "Galmuri11", monospace;
-  color: #d2513f;
+  color: #b7bbb5;
   text-shadow: 0 0 6px rgba(var(--g), .5);
   white-space: pre;
   opacity: .8;
@@ -82,11 +83,11 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
   background:
     var(--grain-wood),
     var(--noise),
-    linear-gradient(180deg, #2a2019, #18120e 55%, #0f0b08);
+    linear-gradient(180deg, #252525, #171717 55%, #0d0d0d);
   background-size: 600px 300px, 200px, auto;
   background-blend-mode: soft-light, soft-light, normal;
   box-shadow:
-    inset 0 1px 0 rgba(var(--g), .18),            /* 위 모서리에 붉은 반사 */
+    inset 0 1px 0 rgba(var(--g), .18),            /* 위 모서리에 빛 반사 */
     inset 1px 0 0 rgba(255, 255, 255, .04),
     inset 0 -14px 24px rgba(0, 0, 0, .7),
     0 40px 80px rgba(0, 0, 0, .9),
@@ -100,7 +101,7 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
 .bezel {
   position: relative;
   padding: calc(var(--bz) * .45);
-  background: #0a0c09;
+  background: #0a0a0a;
   border-radius: 26px;
   box-shadow:
     inset 0 0 0 2px #040504,
@@ -113,24 +114,24 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
   width: var(--sw); height: var(--sh);
   overflow: hidden;
   border-radius: 6% / 8%;                       /* 볼록한 브라운관 모서리 */
-  background: #1e0907;
+  background: #161616;
   box-shadow:
     0 0 30px 4px rgba(var(--g), .38),
-    0 0 120px 30px rgba(235, 60, 40, .17);
+    0 0 120px 30px rgba(210, 215, 210, .12);
 }
 .screen-scroll {
   height: 100%;
   overflow-y: auto; overflow-x: hidden;
-  scrollbar-width: thin; scrollbar-color: #7a2c22 transparent;
-  filter: url(#phosphor) contrast(1.4) brightness(1.08);
+  scrollbar-width: thin; scrollbar-color: #5a5a5a transparent;
+  filter: url(#mono-red) contrast(1.18) brightness(.97);
   animation: crt-on .8s ease-out both;
   transform-origin: center;
 }
 @keyframes crt-on {
-  0%   { transform: scale(1, .006); filter: url(#phosphor) brightness(4); }
-  40%  { transform: scale(1, .006); filter: url(#phosphor) brightness(4); }
-  70%  { transform: scale(1, 1.02); filter: url(#phosphor) brightness(1.6); }
-  100% { transform: scale(1, 1);    filter: url(#phosphor) contrast(1.4) brightness(1.08); }
+  0%   { transform: scale(1, .006); filter: url(#mono-red) brightness(4); }
+  40%  { transform: scale(1, .006); filter: url(#mono-red) brightness(4); }
+  70%  { transform: scale(1, 1.02); filter: url(#mono-red) brightness(1.6); }
+  100% { transform: scale(1, 1);    filter: url(#mono-red) contrast(1.18) brightness(.97); }
 }
 /* 유리: 주사선 · 가운데 번짐 · 가장자리 그늘 · 작은 반사 */
 .screen-fx {
@@ -139,8 +140,8 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
   background:
     radial-gradient(ellipse 14% 9% at 20% 12%, rgba(255, 255, 255, .07), transparent 70%),
     repeating-linear-gradient(0deg, rgba(0, 0, 0, .2) 0 1px, transparent 1px 3px),
-    radial-gradient(ellipse 60% 55% at 50% 48%, rgba(255, 200, 180, .05), transparent 70%),
-    radial-gradient(ellipse 72% 70% at 50% 50%, transparent 58%, rgba(22, 2, 0, .65) 100%);
+    radial-gradient(ellipse 60% 55% at 50% 48%, rgba(255, 255, 255, .05), transparent 70%),
+    radial-gradient(ellipse 72% 70% at 50% 50%, transparent 58%, rgba(0, 0, 0, .7) 100%);
   box-shadow: inset 0 0 50px rgba(0, 0, 0, .55), inset 0 0 6px rgba(var(--g), .4);
   animation: hum 7s steps(1) infinite;
 }
@@ -155,11 +156,11 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
   border-radius: 8px;
   background:
     linear-gradient(90deg, rgba(var(--g), .12), transparent 45%),
-    linear-gradient(180deg, #1b1511, #110d0a);
+    linear-gradient(180deg, #1a1a1a, #0f0f0f);
   box-shadow: inset 1px 0 0 rgba(255, 255, 255, .03), inset 0 0 24px rgba(0, 0, 0, .7);
 }
 .leds { display: flex; gap: calc(var(--side) * .06); }
-.leds i { width: calc(var(--side) * .055); aspect-ratio: 1; border-radius: 50%; background: #3a2617; box-shadow: inset 0 1px 0 rgba(255, 200, 150, .15); }
+.leds i { width: calc(var(--side) * .055); aspect-ratio: 1; border-radius: 50%; background: #2c2a29; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1); }
 .leds i:first-child { background: #ff5a32; box-shadow: 0 0 8px 2px rgba(255, 80, 40, .6); }
 .red-btn {
   width: 34%; aspect-ratio: 1.4;
@@ -172,30 +173,30 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
 .slots { margin-top: auto; width: 74%; display: grid; gap: 10px; }
 .slots i { height: 2px; background: #070605; box-shadow: 0 1px 0 rgba(var(--g), .1); }
 
-/* 테두리에 붙은 포스트잇: 화면 쪽(오른쪽)이 붉은 빛을 받아 주황으로 밝음 */
+/* 테두리에 붙은 메모: 회색 종이에 빨간 글씨, 화면 쪽(오른쪽)이 밝음 */
 .note {
   position: absolute; z-index: 6;
   left: calc(var(--bz) * -2.6); top: 9%;
   width: 116px; padding: 10px 10px 14px;
   font: 12px/1.4 "Galmuri11", monospace;
-  color: #1a0c06;
-  background: linear-gradient(100deg, #6a3a1e, #d0874c 70%, #e6a062);
+  color: #141414;
+  background: linear-gradient(100deg, #555654, #c4c6c1 70%, #d8dad5);
   transform: rotate(-6deg);
   box-shadow: 0 8px 14px rgba(0, 0, 0, .7);
 }
-.note b { color: #5a170c; font-weight: 400; }
+.note b { color: rgb(var(--red)); font-weight: 400; }
 
 /* ── 앞: 책상 ─────────────────────── */
 .desk { /* CRT 뒤 · 아래에 깔리는 책상 면 (CRT 가 위에 올라앉음) */
   position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; height: 30vh;
   background:
-    radial-gradient(ellipse 46% 60% at 50% 0%, rgba(200, 55, 35, .22), transparent 75%),
-    linear-gradient(180deg, rgba(13, 8, 7, 0), #0d0807 8%, #040302 70%);
+    radial-gradient(ellipse 46% 60% at 50% 0%, rgba(200, 205, 200, .12), transparent 75%),
+    linear-gradient(180deg, rgba(12, 12, 12, 0), #0c0c0c 8%, #030303 70%);
 }
 .paper-blur {
   position: absolute; right: 8vw; bottom: -60px;
   width: 360px; height: 150px;
-  background: linear-gradient(170deg, #f0cfc4, #8a4a3e);
+  background: linear-gradient(170deg, #e6e8e4, #6e706c);
   transform: rotate(-9deg);
   filter: blur(10px);
   opacity: .5;
@@ -203,11 +204,11 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
 .bokeh {
   position: absolute; right: 2.5vw; bottom: 15vh;
   width: 70px; height: 40px; border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(255, 190, 110, .9), rgba(255, 150, 60, .3) 45%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(255, 70, 50, .95), rgba(220, 40, 30, .35) 45%, transparent 70%);
   filter: blur(5px);
   mix-blend-mode: screen;
 }
-.bokeh::after { content: ""; position: absolute; left: 70%; top: -10%; width: 40%; height: 70%; border-radius: 50%; background: radial-gradient(rgba(120, 160, 255, .7), transparent 70%); }
+.bokeh::after { content: ""; position: absolute; left: 70%; top: -10%; width: 40%; height: 70%; border-radius: 50%; background: radial-gradient(rgba(230, 230, 225, .5), transparent 70%); }
 
 /* ── 빛과 공기 ─────────────────────── */
 .spill { /* 방 전체에 퍼지는 화면 빛 (CRT 뒤) */
@@ -215,7 +216,7 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
   background: radial-gradient(ellipse 55% 50% at 50% 40%, rgba(var(--g), .18), transparent 72%);
   mix-blend-mode: screen;
 }
-.haze { /* 붉은 연무: 큰 덩어리 노이즈가 천천히 흐름 */
+.haze { /* 회색 연무: 큰 덩어리 노이즈가 천천히 흐름 */
   position: absolute; inset: -10%; z-index: 7; pointer-events: none;
   background:
     var(--fog),
@@ -229,7 +230,7 @@ html, body { height: 100%; overflow: hidden; background: #050303; }
 .grain {
   position: absolute; inset: -50%; z-index: 8; pointer-events: none;
   background-image: var(--noise);
-  opacity: .13; mix-blend-mode: overlay;
+  opacity: .2; mix-blend-mode: overlay;
   animation: grain .8s steps(4) infinite;
 }
 @keyframes grain {
