@@ -22,4 +22,4 @@ python -m http.server 5173
 ```
 → http://localhost:5173
 
-디자인: 스튜디오 배경 위 베이지 레트로 PC(scene.js 픽셀 아트), 그 CRT 화면 속 관공서 프로그램. 글꼴은 갈무리. 이유는 [DESIGN.md](DESIGN.md) 참고.
+디자인: 어두운 방에서 혼자 빛나는 녹색 형광체 CRT(room.css), 그 화면 속 관공서 프로그램. 글꼴은 갈무리. 이유는 [DESIGN.md](DESIGN.md) 참고.

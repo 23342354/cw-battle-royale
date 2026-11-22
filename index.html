@@ -7,16 +7,27 @@
   <meta name="description" content="CW 배틀 로얄 팬 페이지. 레이더, 섬 지도, 출석부를 한 화면에서 봅니다." />
   <link href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="pixel.css" />
+  <link rel="stylesheet" href="room.css" />
 </head>
 <body>
   <a class="skip" href="#roster">출석부로 건너뛰기</a>
 
-  <div class="stage" id="stage">
-    <canvas id="scene" aria-hidden="true"></canvas>
-    <div class="note note-yellow" id="note-zones" aria-hidden="true"></div>
-    <div class="note note-pink" aria-hidden="true">18:00 방송<br>꼭 듣기!!</div>
-    <div class="screen" id="screen">
+  <!-- 화면 내용을 녹색 형광체로 바꾸는 색 필터 -->
+  <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <filter id="phosphor" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.07 0.25 0.03 0 0.005  0.23 0.80 0.08 0 0.025  0.05 0.17 0.02 0 0.004  0 0 0 1 0" />
+      <feComponentTransfer><feFuncG type="gamma" amplitude="1.12" exponent="0.9" offset="0" /></feComponentTransfer>
+    </filter>
+  </svg>
+
+  <div class="room" id="room">
+    <div class="shelf" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="monitor2" aria-hidden="true"><pre id="code"></pre></div>
+
+    <div class="crt">
+      <div class="crt-face">
+        <div class="bezel">
+          <div class="screen" id="screen">
         <div class="screen-scroll" tabindex="-1">
 
   <header class="topbar">
@@ -108,8 +119,30 @@
   </footer>
 
         </div>
-        <div class="screen-fx" aria-hidden="true"></div>
+            <div class="screen-fx" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="side-panel" aria-hidden="true">
+          <span class="leds"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="red-btn"></span>
+          <span class="knobs"><i></i><i></i><i></i><i></i></span>
+          <span class="slots"><i></i><i></i></span>
+        </div>
+      </div>
+      <div class="note note-yellow" id="note-zones" aria-hidden="true"></div>
     </div>
+
+    <div class="desk" aria-hidden="true">
+      <div class="kb-wrap"><div class="keyboard" id="keyboard"></div></div>
+      <span class="cable"></span>
+      <span class="paper-blur"></span>
+      <span class="bokeh"></span>
+    </div>
+
+    <div class="spill" aria-hidden="true"></div>
+    <div class="haze" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
   </div>
 
   <script src="data.js"></script>
