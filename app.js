@@ -1,6 +1,5 @@
 (() => {
   const D = window.BR_DATA;
-  const COLS = "ABCDEFGHIJ".split("");
   const STATUS_LABEL = { alive: "생존", hurt: "부상", dead: "사망" };
   const $ = (s) => document.querySelector(s);
   const svgNS = "http://www.w3.org/2000/svg";
@@ -15,7 +14,7 @@
 
   const state = { filter: "all", query: "", selected: D.students.find((s) => s.status !== "dead")?.id };
 
-  const parsePos = (p) => ({ c: COLS.indexOf(p[0]), r: parseInt(p.slice(1), 10) - 1 });
+  const parsePos = (p) => ({ r: "ABCDEFGHIJ".indexOf(p[0]), c: parseInt(p.slice(1), 10) - 1 });
 
   // ── header ─────────────────────────
   function renderHeader() {
@@ -94,27 +93,123 @@
   }
 
   // ── map ────────────────────────────
-  // 섬 외곽선 (0~100 좌표계)
+  // 좌표 표기: 행 A~J + 열 01~10 (예: F-06). 데이터는 "F6" 형식.
+  const ROWS = "ABCDEFGHIJ".split("");
+  const pad = (n) => String(n).padStart(2, "0");
+  const fmtCell = (id) => `${id[0]}-${pad(id.slice(1))}`;
+
+  // 섬 외곽선 (0~100, 한 칸 = 10). 북쪽 만, 서쪽 곶, 남동쪽 등대 꼬리
   const ISLAND =
-    "M22 8 C34 2 50 6 58 4 C70 2 80 10 86 18 C94 28 90 38 95 48 C99 58 92 66 90 76 C88 88 76 96 64 94 C54 92 48 98 36 95 C24 92 14 86 10 74 C6 62 12 54 8 44 C4 32 10 16 22 8 Z";
+    "M14 31 C12 22 20 15 28 14 C33 13 36 18 41 17 C46 16 48 12 54 13 C63 14 71 17 77 23 C84 30 88 39 86 49 " +
+    "C84 58 86 65 90 72 C93 77 97 83 97 88 C96 92 91 92 88 89 C84 86 79 85 74 88 C68 92 60 93 52 93 " +
+    "C43 94 34 92 27 89 C20 86 16 80 13 73 C9 65 5 58 6 49 C7 42 15 39 14 31 Z";
+
+  // 도로 (흰 길 대신 형광 점선)
+  const ROADS = [
+    "M20 40 C30 30 45 28 58 30 C70 32 78 40 80 52 C82 64 74 76 62 82 C50 87 34 84 24 74 C16 66 14 50 20 40 Z", // 순환도로
+    "M35 22 C40 30 50 34 56 36",          // 북쪽 마을 → 분교
+    "M56 36 C56 44 55 50 55 55",          // 분교 → 산 정상
+    "M17 56 C28 58 40 58 55 55",          // 서쪽 마을 → 산
+    "M55 55 C60 66 58 76 50 86",          // 산 → 남쪽 마을
+    "M62 82 C70 84 80 84 88 86 C92 87 94 88 95 88", // 남쪽 해안 → 등대
+  ];
+
+  function buildIsland() {
+    const svg = el("svg", { class: "map-island", viewBox: "0 0 100 100", preserveAspectRatio: "none", "aria-hidden": "true" }, true);
+    const defs = el("defs", {}, true);
+    const clip = el("clipPath", { id: "island-clip" }, true);
+    clip.append(el("path", { d: ISLAND }, true));
+    defs.append(clip);
+    svg.append(defs);
+
+    // 바다 물결
+    const sea = el("g", { class: "m-sea" }, true);
+    for (let y = 4; y < 100; y += 6) {
+      for (let x = (y % 12 ? 3 : 8); x < 100; x += 10) {
+        sea.append(el("path", { d: `M${x} ${y} q1.2 -1 2.4 0 t2.4 0` }, true));
+      }
+    }
+    svg.append(sea);
+
+    svg.append(el("path", { d: ISLAND, class: "m-land" }, true));
+
+    // 등고선: 섬 모양을 산 정상(F-06) 쪽으로 줄여 겹침
+    const contours = el("g", { "clip-path": "url(#island-clip)" }, true);
+    [0.78, 0.58, 0.4, 0.24, 0.11].forEach((k, i) => {
+      contours.append(el("path", {
+        d: ISLAND, class: `m-contour${i > 2 ? " high" : ""}`,
+        transform: `translate(55 55) scale(${k}) translate(-55 -55)`,
+      }, true));
+    });
+    svg.append(contours);
+
+    const roads = el("g", { class: "m-roads", "clip-path": "url(#island-clip)" }, true);
+    ROADS.forEach((d) => roads.append(el("path", { d }, true)));
+    svg.append(roads);
+
+    svg.append(el("path", { d: ISLAND, class: "m-coast" }, true));
+
+    // 나침반 (A~B-09)
+    const n = el("g", { class: "m-compass", transform: "translate(88 11)" }, true);
+    n.append(el("path", { d: "M0 -6 L2 2 L0 0.5 L-2 2 Z" }, true), el("line", { x1: -4, y1: 0, x2: 4, y2: 0 }, true));
+    svg.append(n);
+    return svg;
+  }
+
+  // 지명 · 기호는 글자가 늘어나지 않도록 격자 위에 HTML로 얹는다
+  function buildLandmarks(map) {
+    const layer = el("div", { class: "map-marks", "aria-hidden": "true" });
+    (D.landmarks || []).forEach((m) => {
+      const mk = el("span", { class: `mark mark-${m.type}`, style: `left:${m.x}%;top:${m.y}%` });
+      mk.append(el("i"), el("b", { text: m.name }));
+      layer.append(mk);
+    });
+    layer.append(el("span", { class: "map-title", text: D.mapTitle || "섬 간이 지도" }));
+    map.append(layer);
+  }
+
+  function describeCell(id) {
+    const r = ROWS.indexOf(id[0]), c = +id.slice(1) - 1;
+    const near = (D.landmarks || []).find((m) => Math.floor(m.y / 10) === r && Math.floor(m.x / 10) === c);
+    const who = D.students.filter((s) => s.pos === id).map((s) => `${s.name}${s.status === "dead" ? "(사망)" : ""}`);
+    const parts = [fmtCell(id)];
+    if (near) parts.push(near.name);
+    if (D.dangerZones.includes(id)) parts.push("금지구역");
+    else if (D.upcomingZones.includes(id)) parts.push("다음 금지구역");
+    parts.push(who.length ? who.join(", ") : "아무도 없음");
+    return parts.join("  /  ");
+  }
 
   function buildMap() {
     const map = $("#map");
-    map.append(el("span", { class: "map-axis" }));
-    COLS.forEach((c) => map.append(el("span", { class: "map-axis", text: c })));
-    for (let r = 0; r < 10; r++) {
-      map.append(el("span", { class: "map-axis", text: r + 1 }));
-      for (let c = 0; c < 10; c++) {
-        const id = COLS[c] + (r + 1);
-        const cell = el("div", { class: "cell", "data-cell": id, role: "gridcell", "aria-label": id });
+    const grid = el("div", { class: "map-grid" });
+    grid.append(el("span", { class: "map-axis" }));
+    for (let c = 1; c <= 10; c++) grid.append(el("span", { class: "map-axis", text: pad(c) }));
+    ROWS.forEach((row) => {
+      grid.append(el("span", { class: "map-axis", text: row }));
+      for (let c = 1; c <= 10; c++) {
+        const id = row + c;
+        const cell = el("div", { class: "cell", "data-cell": id, role: "gridcell", "aria-label": fmtCell(id) });
         if (D.dangerZones.includes(id)) cell.classList.add("danger");
         if (D.upcomingZones.includes(id)) cell.classList.add("next");
-        map.append(cell);
+        grid.append(cell);
       }
-    }
-    const island = el("svg", { class: "map-island", viewBox: "0 0 100 100", preserveAspectRatio: "none", "aria-hidden": "true" }, true);
-    island.append(el("path", { d: ISLAND }, true));
-    map.prepend(island);
+    });
+    const board = el("div", { class: "map-board" });
+    board.append(buildIsland());
+    buildLandmarks(board);
+    map.append(grid);
+    // 섬 레이어는 첫 칸(축) 뒤 영역 전체를 덮는다
+    map.prepend(board);
+
+    const out = $("#map-readout");
+    const idle = "칸을 가리키면 좌표와 그곳에 있는 사람이 나옵니다.";
+    out.textContent = idle;
+    grid.addEventListener("pointerover", (e) => {
+      const cell = e.target.closest(".cell");
+      if (cell) out.textContent = describeCell(cell.dataset.cell);
+    });
+    grid.addEventListener("pointerleave", () => { out.textContent = idle; });
   }
 
   function renderMapPins() {
@@ -122,8 +217,8 @@
       c.replaceChildren();
       c.classList.remove("focus");
       const base = c.dataset.cell;
-      const tags = [D.dangerZones.includes(base) && "금지구역", D.upcomingZones.includes(base) && "예정 금지구역"].filter(Boolean);
-      c.setAttribute("aria-label", [base, ...tags].join(", "));
+      const tags = [D.dangerZones.includes(base) && "금지구역", D.upcomingZones.includes(base) && "다음 금지구역"].filter(Boolean);
+      c.setAttribute("aria-label", [fmtCell(base), ...tags].join(", "));
     });
     D.students.forEach((s) => {
       const cell = document.querySelector(`[data-cell="${s.pos}"]`);
@@ -168,8 +263,8 @@
       g.append(grp);
     });
     $("#radar-legend").textContent = count
-      ? `${sel.name}(${sel.pos}) 주변 ${RANGE}칸 안에 ${count}명이 있습니다.`
-      : `${sel.name}(${sel.pos}) 주변 ${RANGE}칸 안에는 아무도 없습니다.`;
+      ? `${sel.name}(${fmtCell(sel.pos)}) 주변 ${RANGE}칸 안에 ${count}명이 있습니다.`
+      : `${sel.name}(${fmtCell(sel.pos)}) 주변 ${RANGE}칸 안에는 아무도 없습니다.`;
   }
 
   // ── hex stats ──────────────────────
@@ -216,7 +311,7 @@
     const h = el("h3", { class: "detail-name" });
     h.append(document.createTextNode(s.name), el("span", { class: `badge ${s.status}`, text: STATUS_LABEL[s.status] }));
     const dl = el("dl");
-    const rows = [["출석번호", s.no], ["동아리", s.club], ["지급 무기", s.weapon], ["마지막 위치", s.pos]];
+    const rows = [["출석번호", s.no], ["동아리", s.club], ["지급 무기", s.weapon], ["마지막 위치", fmtCell(s.pos)]];
     if (s.killedAt) rows.push(["사망 시각", s.killedAt]);
     rows.forEach(([k, v]) => {
       const d = el("div");
@@ -255,7 +350,7 @@
 
   // ── desk props (손글씨 메모 / 방송 기록지) ──
   function renderDesk() {
-    const fmt = (z) => `${z[0]}-${z.slice(1)}`;
+    const fmt = (z) => `${z[0]}-${z.slice(1)}`; // 손글씨 메모는 짧게
     const zones = $("#note-zones");
     if (zones) {
       zones.innerHTML = "금지구역!!<br>" +

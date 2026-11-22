@@ -187,11 +187,13 @@ h1 {
   display: grid;
   gap: var(--s6) var(--s5);
   padding: var(--s6) var(--s5) var(--s5);
-  grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr) minmax(280px, 1.35fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2.3fr);
   grid-template-areas:
-    "broadcast broadcast notice"
-    "radar     roster    map"
-    "stats     detail    detail";
+    "broadcast broadcast map"
+    "roster    roster    map"
+    "radar     stats     detail"
+    "notice    notice    detail";
+  align-items: start;
 }
 .panel-broadcast { grid-area: broadcast; }
 .panel-notice    { grid-area: notice; }
@@ -309,33 +311,77 @@ h1 {
 .roster-empty { grid-column: 1 / -1; color: var(--afterglow); font-size: 14px; padding: var(--s5) var(--s4); }
 
 /* ── 섬 지도 ───────────────────────── */
-.map-wrap { position: relative; }
-.map {
+/* 행 A~J × 열 01~10. 섬 그림(svg) 위에 지명(html), 그 위에 격자 칸 */
+.map-wrap { position: relative; width: 100%; max-width: 680px; margin: 0 auto; }
+.map { --axis: 24px; position: relative; aspect-ratio: 1; }
+.map-board { position: absolute; left: var(--axis); top: var(--axis); right: 0; bottom: 0; z-index: 1; }
+.map-island { position: absolute; inset: 0; width: 100%; height: 100%; }
+.map-grid {
+  position: absolute; inset: 0; z-index: 2;
   display: grid;
-  grid-template-columns: 18px repeat(10, 1fr);
-  grid-template-rows: 18px repeat(10, 1fr);
-  aspect-ratio: 1;
-  position: relative;
+  grid-template-columns: var(--axis) repeat(10, 1fr);
+  grid-template-rows: var(--axis) repeat(10, 1fr);
 }
-.map-island {
-  position: absolute; left: 18px; top: 18px;
-  width: calc(100% - 18px); height: calc(100% - 18px);
-  pointer-events: none;
+.map-axis { font-size: 12px; font-weight: 700; color: var(--afterglow); display: grid; place-items: center; }
+
+.m-sea path { fill: none; stroke: var(--soot); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .55; }
+.m-land { fill: var(--shade); }
+.m-contour { fill: none; stroke: var(--soot); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.m-contour.high { stroke: var(--afterglow); opacity: .55; }
+.m-roads path { fill: none; stroke: var(--afterglow); stroke-width: 1.6; stroke-dasharray: 6 4; vector-effect: non-scaling-stroke; opacity: .75; }
+.m-coast { fill: none; stroke: var(--phosphor); stroke-width: 1.6; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 2px rgba(255, 181, 71, .8)); }
+.m-compass path { fill: var(--afterglow); }
+.m-compass line { stroke: var(--afterglow); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+
+/* 지명 */
+.map-marks { position: absolute; inset: 0; pointer-events: none; }
+.mark {
+  position: absolute;
+  display: flex; align-items: center; gap: 5px;
+  transform: translate(-6px, -50%);
+  white-space: nowrap;
 }
-.map-island path { fill: var(--shade); stroke: var(--afterglow); stroke-width: .5; }
-.map-axis { font-size: 11px; color: var(--afterglow); display: grid; place-items: center; }
+.mark i { flex: none; width: 10px; height: 10px; position: relative; }
+.mark b { font-weight: 400; font-size: 12px; color: var(--afterglow); }
+.mark-village i { width: 4px; height: 4px; margin: 4px 7px 0 0; background: var(--afterglow); box-shadow: 6px 0 var(--afterglow), 3px -5px var(--afterglow); }
+.mark-hq i { width: 11px; height: 11px; background: var(--phosphor); box-shadow: 0 0 6px var(--phosphor); }
+.mark-hq b { background: var(--phosphor); color: var(--glass); text-shadow: none; font-weight: 700; padding: 0 4px; }
+.mark-pond i { width: 13px; height: 7px; border: 1.5px solid var(--afterglow); border-radius: 50%; }
+.mark-peak i { width: 12px; height: 10px; background: var(--phosphor); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.mark-peak b { color: var(--phosphor); font-weight: 700; }
+.mark-temple i { width: 10px; height: 10px; border: 1.5px solid var(--afterglow); border-radius: 50%; }
+.mark-temple i::after { content: ""; position: absolute; inset: 2.5px; background: var(--afterglow); border-radius: 50%; }
+.mark-shrine i { width: 11px; height: 9px; border: 1.5px solid var(--afterglow); border-bottom: 0; }
+.mark-shrine i::before { content: ""; position: absolute; left: -3px; right: -3px; top: -4px; height: 1.5px; background: var(--afterglow); }
+.mark-clinic i::before, .mark-clinic i::after { content: ""; position: absolute; background: var(--afterglow); }
+.mark-clinic i::before { left: 4px; top: 0; width: 2px; height: 10px; }
+.mark-clinic i::after { top: 4px; left: 0; height: 2px; width: 10px; }
+.mark-lighthouse { flex-direction: row-reverse; transform: translate(calc(-100% + 6px), -50%); }
+.mark-lighthouse i { width: 8px; height: 8px; margin: 1px; background: var(--phosphor); transform: rotate(45deg); box-shadow: 0 0 8px 2px rgba(255, 181, 71, .6); }
+.map-title {
+  position: absolute; left: 1.5%; bottom: 2%;
+  padding: 2px 8px;
+  border: 1px solid var(--soot);
+  font-size: 13px; font-weight: 700; color: var(--afterglow);
+  background: var(--glass);
+}
+
+/* 격자 칸 */
 .cell {
   position: relative;
-  border-right: 1px dotted rgba(107, 71, 24, .7); border-bottom: 1px dotted rgba(107, 71, 24, .7);
-  display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 2px;
+  border-right: 1px solid rgba(107, 71, 24, .55); border-bottom: 1px solid rgba(107, 71, 24, .55);
+  display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 3px;
 }
-.cell.danger { background: repeating-linear-gradient(45deg, rgba(255, 181, 71, .55) 0 2px, transparent 2px 6px); }
-.cell.next { outline: 1px dashed var(--phosphor); outline-offset: -3px; }
+.map-grid > .cell:nth-child(11n + 2) { border-left: 1px solid rgba(107, 71, 24, .55); }
+.map-grid > .cell:nth-child(-n + 22) { border-top: 1px solid rgba(107, 71, 24, .55); }
+.cell:hover { box-shadow: inset 0 0 0 1px var(--afterglow); }
+.cell.danger { background: repeating-linear-gradient(45deg, rgba(255, 181, 71, .5) 0 2px, transparent 2px 7px); }
+.cell.next { outline: 1px dashed var(--phosphor); outline-offset: -4px; }
 .cell.focus { box-shadow: inset 0 0 0 2px var(--phosphor); z-index: 2; }
-.pin { width: 6px; height: 6px; background: var(--phosphor); box-shadow: 0 0 5px var(--phosphor); }
-.pin.hurt { background: transparent; box-shadow: inset 0 0 0 1.5px var(--phosphor), 0 0 5px var(--phosphor); }
-.pin.dead { background: transparent; box-shadow: none; width: 8px; height: 8px; position: relative; }
-.pin.dead::before, .pin.dead::after { content: ""; position: absolute; left: 50%; top: 0; width: 1.5px; height: 100%; background: var(--afterglow); }
+.pin { width: 8px; height: 8px; background: var(--phosphor); box-shadow: 0 0 6px var(--phosphor); }
+.pin.hurt { background: var(--glass); box-shadow: inset 0 0 0 2px var(--phosphor), 0 0 6px var(--phosphor); }
+.pin.dead { background: transparent; box-shadow: none; width: 10px; height: 10px; position: relative; }
+.pin.dead::before, .pin.dead::after { content: ""; position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--afterglow); }
 .pin.dead::before { transform: translateX(-50%) rotate(45deg); }
 .pin.dead::after { transform: translateX(-50%) rotate(-45deg); }
 .pin.sel { outline: 1.5px solid var(--phosphor); outline-offset: 2px; }
@@ -345,8 +391,19 @@ h1 {
 .lg { width: 12px; height: 12px; display: inline-block; }
 .lg-danger { background: repeating-linear-gradient(45deg, var(--phosphor) 0 2px, transparent 2px 5px); }
 .lg-next { outline: 1px dashed var(--phosphor); outline-offset: -2px; }
-.lg-alive { width: 6px; height: 6px; margin: 3px; background: var(--phosphor); }
+.lg-alive { width: 8px; height: 8px; margin: 2px; background: var(--phosphor); }
 .lg-dead { background: linear-gradient(45deg, transparent 44%, var(--afterglow) 44% 56%, transparent 56%), linear-gradient(-45deg, transparent 44%, var(--afterglow) 44% 56%, transparent 56%); }
+/* 지도가 좁으면 지명은 본부와 산 정상만 남기고 기호만 */
+.map-wrap { container: map / inline-size; }
+@container map (max-width: 420px) {
+  .map { --axis: 18px; }
+  .map-axis { font-size: 10px; }
+  .mark b { display: none; }
+  .mark-hq b, .mark-peak b { display: inline; font-size: 10px; }
+  .map-title { font-size: 10px; padding: 1px 5px; }
+  .pin { width: 6px; height: 6px; }
+}
+.map-readout { margin: 0; min-height: 1.6em; padding-top: var(--s2); border-top: 1px solid var(--soot); font-size: 14px; }
 
 /* ── 능력치 ────────────────────────── */
 .hex { width: 100%; max-width: 300px; margin: 0 auto; display: block; overflow: visible; }
@@ -424,9 +481,10 @@ h1 {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas:
       "broadcast notice"
+      "map       map"
       "roster    roster"
-      "radar     map"
-      "stats     detail";
+      "radar     stats"
+      "detail    detail";
   }
 }
 @container screen (max-width: 680px) {
@@ -434,7 +492,7 @@ h1 {
   .board {
     padding: var(--s6) var(--s4) var(--s4);
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "broadcast" "roster" "detail" "stats" "radar" "map" "notice";
+    grid-template-areas: "broadcast" "map" "roster" "detail" "stats" "radar" "notice";
   }
   .detail { grid-template-columns: 84px minmax(0, 1fr); gap: var(--s4); }
   .portrait { font-size: 32px; }
