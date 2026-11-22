@@ -1,9 +1,9 @@
 /* ─────────────────────────────────────────────
    PIXEL — 모니터 밖은 픽셀 아트 (scene.js 가 캔버스에 그림)
-   화면 안 UI 는 styles.css, 여기는 무대 · 화면 자리 · 포스트잇 · LCD 화면 결함
+   화면 안 UI 는 styles.css, 여기는 무대 · 화면 자리 · 포스트잇 · CRT 유리
    ───────────────────────────────────────────── */
 
-html, body { height: 100%; overflow: hidden; background: #1a212d; }
+html, body { height: 100%; overflow: hidden; background: #8eabbe; }
 
 .stage { position: fixed; inset: 0; overflow: hidden; --S: 4px; }
 #scene {
@@ -12,43 +12,35 @@ html, body { height: 100%; overflow: hidden; background: #1a212d; }
   image-rendering: crisp-edges;
 }
 
-.screen { position: absolute; overflow: hidden; background: #23262a; }
+.screen {
+  position: absolute; overflow: hidden; background: #1c2b2b;
+  border-radius: calc(var(--S) * 6);
+}
 .screen-scroll {
   height: 100%;
   overflow-y: auto; overflow-x: hidden;
   scrollbar-width: thin; scrollbar-color: var(--face-lo) var(--face);
-  filter: contrast(.96) saturate(.85);
-  animation: lcd-on .9s steps(6) both;
+  filter: contrast(.97) saturate(.9);
+  animation: crt-on .7s steps(7) both;
+  transform-origin: center;
 }
-@keyframes lcd-on {
-  0%   { opacity: 0; }
-  30%  { opacity: 1; filter: brightness(.2) contrast(.5); }
-  100% { filter: contrast(.96) saturate(.85); }
+@keyframes crt-on {
+  0%   { transform: scale(1, .01); filter: brightness(3); }
+  45%  { transform: scale(1, .01); filter: brightness(3); }
+  100% { transform: scale(1, 1); filter: contrast(.97) saturate(.9); }
 }
 
-/* LCD 결함: 격자 · 서브픽셀 · 백라이트 누수 · 죽은 픽셀 (픽셀 아트와 겹치지 않게 약하게) */
+/* CRT 유리: 약한 주사선 · 가장자리 그늘(볼록한 유리) · 오른쪽 위 반사광 */
 .screen-fx {
   position: absolute; inset: 0; z-index: 30; pointer-events: none;
+  border-radius: inherit;
   background:
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, .09) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, .07) 0 1px, transparent 1px 3px),
-    linear-gradient(180deg, rgba(0, 0, 0, .08), transparent 25%, transparent 80%, rgba(255, 248, 215, .06));
-  box-shadow: inset 0 0 12px rgba(0, 0, 0, .3);
+    radial-gradient(ellipse 26% 16% at 74% 10%, rgba(255, 255, 255, .22), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 30% 0%, rgba(255, 255, 255, .05), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .09) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 75% 70% at 50% 50%, transparent 62%, rgba(10, 20, 20, .45) 100%);
+  box-shadow: inset 0 0 calc(var(--S) * 6) rgba(0, 0, 0, .55);
 }
-.screen-fx::before {
-  content: ""; position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 18% 12% at 1% 1%, rgba(255, 255, 236, .2), transparent 70%),
-    radial-gradient(ellipse 16% 10% at 99% 99%, rgba(255, 255, 236, .22), transparent 70%);
-  mix-blend-mode: screen;
-}
-.lcd-defects { position: absolute; inset: 0; z-index: 31; pointer-events: none; }
-.dp { position: absolute; width: 3px; height: 3px; }
-.dp-dead { background: #050505; }
-.dp-green { background: #3dff6a; }
-.dp-white { background: #fff; }
-.stuck-line { position: absolute; top: 0; bottom: 0; left: 63.7%; width: 1px; background: rgba(225, 70, 255, .55); }
-.band { position: absolute; left: 0; right: 0; top: 71.3%; height: 3px; background: rgba(0, 0, 0, .06); }
 
 /* 포스트잇: 평면 색 + 픽셀 그림자 + 계단 모서리 */
 .note {
@@ -72,7 +64,7 @@ html, body { height: 100%; overflow: hidden; background: #1a212d; }
 /* 휴대폰: 방은 숨기고 화면만, 베이지 테두리 */
 @media (max-width: 720px) {
   .note { display: none !important; }
-  .screen { inset: 0; border: 8px solid #cdc3a3; border-bottom-width: 22px; box-shadow: inset 0 0 0 2px #25231f; }
+  .screen { inset: 0; border: 8px solid #d9cead; border-bottom-width: 22px; border-radius: 6px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

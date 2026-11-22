@@ -22,4 +22,4 @@ python -m http.server 5173
 ```
 → http://localhost:5173
 
-디자인: 픽셀 아트 방(scene.js 캔버스) 안의 낡은 LCD, 그 위의 관공서 프로그램. 글꼴은 갈무리. 이유는 [DESIGN.md](DESIGN.md) 참고.
+디자인: 스튜디오 배경 위 베이지 레트로 PC(scene.js 픽셀 아트), 그 CRT 화면 속 관공서 프로그램. 글꼴은 갈무리. 이유는 [DESIGN.md](DESIGN.md) 참고.
