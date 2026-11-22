@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@700;900&family=IBM+Plex+Sans+KR:wght@400;500;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-</head>
+  <link rel="stylesheet" href="scene.css" /></head>
 <body>
   <a class="skip" href="#roster">명부로 건너뛰기</a>
 
@@ -157,6 +157,8 @@
 
   <!-- 책상 + 소품 (장식) -->
   <div class="desk" aria-hidden="true">
+   <div class="desk-plane">
+    <div class="keyboard" id="keyboard"></div>
     <div class="prop folder">
       <span class="folder-tab">3-B</span>
       <span class="folder-sheet"></span>
@@ -174,8 +176,11 @@
     </div>
     <div class="prop pen"></div>
     <div class="prop desk-note" id="desk-note"></div>
-    <div class="prop mug"><span class="steam"></span><span class="steam"></span></div>
+    <span class="desk-light"></span>
+   </div>
+    <div class="mug"><span class="coffee"></span><span class="steam"></span><span class="steam"></span><span class="steam"></span></div>
   </div>
+  <div class="grain" aria-hidden="true"></div>
   </div>
 
   <script src="data.js"></script>

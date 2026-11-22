@@ -252,6 +252,26 @@
     const dead = D.students.filter((s) => s.status === "dead").length;
     const note = $("#desk-note");
     if (note) note.innerHTML = `남은 사람<br><b>${D.students.length - dead}명</b><br><s>${dead}명</s> 아웃`;
+    const kb = $("#keyboard");
+    if (kb) {
+      // [키 개수, 넓은 키 위치→폭] 단순화한 104키 배열
+      const rows = [
+        { n: 14, wide: { 13: 2 } },
+        { n: 14, wide: { 0: 1.5, 13: 1.5 } },
+        { n: 13, wide: { 0: 1.8, 12: 2.2 } },
+        { n: 12, wide: { 0: 2.3, 11: 2.7 } },
+        { n: 7, wide: { 3: 6.5 } },
+      ];
+      rows.forEach((r) => {
+        const row = el("span", { class: "kb-row" });
+        for (let i = 0; i < r.n; i++) {
+          const k = el("i");
+          if (r.wide[i]) k.style.flexGrow = r.wide[i];
+          row.append(k);
+        }
+        kb.append(row);
+      });
+    }
     const lines = $("#paper-lines");
     if (lines) {
       D.broadcasts.slice().reverse().forEach((b, i, arr) => {
