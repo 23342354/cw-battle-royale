@@ -240,8 +240,31 @@
     renderRoster();
   });
 
+  // ── desk props (손글씨 메모 / 방송 기록지) ──
+  function renderDesk() {
+    const fmt = (z) => `${z[0]}-${z.slice(1)}`;
+    const zones = $("#note-zones");
+    if (zones) {
+      zones.innerHTML = "금지구역!!<br>" +
+        D.dangerZones.map((z) => `<b>${fmt(z)}</b>`).join(" ") +
+        (D.upcomingZones.length ? `<br>다음 → ${D.upcomingZones.map(fmt).join(", ")}` : "");
+    }
+    const dead = D.students.filter((s) => s.status === "dead").length;
+    const note = $("#desk-note");
+    if (note) note.innerHTML = `남은 사람<br><b>${D.students.length - dead}명</b><br><s>${dead}명</s> 아웃`;
+    const lines = $("#paper-lines");
+    if (lines) {
+      D.broadcasts.slice().reverse().forEach((b, i, arr) => {
+        const row = el("span", { text: `${b.time}  ${b.text.slice(0, 14)}…` });
+        if (i === arr.length - 1) row.className = "hl";
+        lines.append(row);
+      });
+    }
+  }
+
   renderHeader();
   renderBroadcasts();
+  renderDesk();
   buildMap();
   select(state.selected);
 })();

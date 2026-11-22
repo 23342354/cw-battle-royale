@@ -7,7 +7,7 @@
   <meta name="description" content="CW 배틀 로얄 팬 페이지 — 레이더, 섬 지도, 학생 명부" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@700;900&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@700;900&family=IBM+Plex+Sans+KR:wght@400;500;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -15,6 +15,9 @@
 
   <div class="room">
   <div class="monitor">
+    <div class="sticky sticky-yellow" id="note-zones" aria-hidden="true"></div>
+    <div class="sticky sticky-pink" aria-hidden="true"><span class="tape"></span>18:00 방송<br>꼭 듣기!!</div>
+    <div class="sticky sticky-blue" aria-hidden="true">믿지 마<br><u>아무도.</u></div>
     <div class="bezel">
       <div class="screen">
         <div class="screen-scroll" tabindex="-1">
@@ -151,6 +154,28 @@
     </div>
   </div>
   <div class="stand" aria-hidden="true"><span class="neck"></span><span class="base"></span></div>
+
+  <!-- 책상 + 소품 (장식) -->
+  <div class="desk" aria-hidden="true">
+    <div class="prop folder">
+      <span class="folder-tab">3-B</span>
+      <span class="folder-sheet"></span>
+      <span class="folder-label">프로그램 대상자 명단<small>3학년 B반 · 20명</small></span>
+      <span class="stamp">기밀</span>
+    </div>
+    <div class="prop paper">
+      <span class="clip"></span>
+      <strong>정기 방송 기록</strong>
+      <span class="paper-lines" id="paper-lines"></span>
+    </div>
+    <div class="prop polaroid">
+      <span class="photo"><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="caption">수학여행 전날</span>
+    </div>
+    <div class="prop pen"></div>
+    <div class="prop desk-note" id="desk-note"></div>
+    <div class="prop mug"><span class="steam"></span><span class="steam"></span></div>
+  </div>
   </div>
 
   <script src="data.js"></script>
