@@ -173,18 +173,18 @@ html, body { height: 100%; overflow: hidden; background: #050505; }
 .slots { margin-top: auto; width: 74%; display: grid; gap: 10px; }
 .slots i { height: 2px; background: #070605; box-shadow: 0 1px 0 rgba(var(--g), .1); }
 
-/* 테두리에 붙은 메모: 회색 종이에 빨간 글씨, 화면 쪽(오른쪽)이 밝음 */
+/* 테두리에 붙은 메모: 회색 종이에 빨간 글씨, 화면 쪽(오른쪽)이 조금 더 밝음 */
 .note {
   position: absolute; z-index: 6;
   left: calc(var(--bz) * -2.6); top: 9%;
   width: 116px; padding: 10px 10px 14px;
   font: 12px/1.4 "Galmuri11", monospace;
-  color: #141414;
-  background: linear-gradient(100deg, #555654, #c4c6c1 70%, #d8dad5);
+  color: #111111;
+  background: linear-gradient(100deg, #c2c4bf, #d6d8d3 65%, #e3e5e0);
   transform: rotate(-6deg);
   box-shadow: 0 8px 14px rgba(0, 0, 0, .7);
 }
-.note b { color: rgb(var(--red)); font-weight: 400; }
+.note b { color: #8f160f; font-weight: 400; }   /* 회색 종이 위에서도 4.5:1 이상 */
 
 /* ── 앞: 책상 ─────────────────────── */
 .desk { /* CRT 뒤 · 아래에 깔리는 책상 면 (CRT 가 위에 올라앉음) */

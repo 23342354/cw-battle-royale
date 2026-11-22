@@ -299,7 +299,7 @@ h1 small { font-size: 12px; font-weight: 400; color: #cfd8e6; margin-left: 6px; 
 .lg-next { outline: 2px dashed var(--warn); outline-offset: -2px; }
 .lg-alive { width: 8px; height: 8px; margin: 2px; background: var(--ok); }
 .lg-dead { background: linear-gradient(45deg, transparent 40%, var(--alert) 40% 60%, transparent 60%), linear-gradient(-45deg, transparent 40%, var(--alert) 40% 60%, transparent 60%); }
-.map-readout { margin: 0; min-height: 22px; padding: 3px 6px; background: var(--field); box-shadow: var(--sunken); }
+.map-readout { margin: 0; min-height: 22px; padding: 6px 12px; background: var(--field); box-shadow: var(--sunken); }
 
 @container map (max-width: 420px) {
   .map { --axis: 16px; }
@@ -357,8 +357,8 @@ h1 small { font-size: 12px; font-weight: 400; color: #cfd8e6; margin-left: 6px; 
 .status-line { margin: 0; display: flex; gap: 3px; }
 .status-line span { padding: 1px 8px; box-shadow: inset 1px 1px 0 var(--face-lo), inset -1px -1px 0 var(--face-hi); }
 .status-line span:last-child { flex: 1; }
-.status-line strong { color: var(--ok); }
-.foot-note { margin: 0; padding: 0 8px; color: var(--ink-dim); }
+.status-line strong { color: var(--ink); font-weight: 700; }
+.foot-note { margin: 0; padding: 0 8px; color: #3f3e39; }
 
 /* 모니터 밖 픽셀 아트는 scene.js + pixel.css */
 
