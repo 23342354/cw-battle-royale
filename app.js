@@ -1,7 +1,7 @@
 (() => {
   const D = window.BR_DATA;
   const COLS = "ABCDEFGHIJ".split("");
-  const STATUS_LABEL = { alive: "생존", hurt: "부상", dead: "탈락" };
+  const STATUS_LABEL = { alive: "생존", hurt: "부상", dead: "사망" };
   const $ = (s) => document.querySelector(s);
   const svgNS = "http://www.w3.org/2000/svg";
   const el = (tag, attrs = {}, ns) => {
@@ -21,19 +21,35 @@
   function renderHeader() {
     $("#game-title").textContent = D.game.title;
     $("#class-label").textContent = D.game.classLabel;
-    $("#stat-day").textContent = String(D.game.day).padStart(2, "0");
-    $("#stat-time").textContent = D.game.time;
     const dead = D.students.filter((s) => s.status === "dead").length;
-    $("#stat-alive").textContent = `${D.students.length - dead}/${D.students.length}`;
-    $("#stat-dead").textContent = dead;
+    const line = $("#status-line");
+    line.replaceChildren(
+      document.createTextNode(`${D.game.day}일차 ${D.game.time} 현재, ${D.students.length}명 중 `),
+      el("strong", { text: `${D.students.length - dead}명 생존` })
+    );
   }
 
+  // 페이지에서 유일하게 스스로 움직이는 순간: 최신 방송 한 줄이 찍힌다
   function renderBroadcasts() {
     const ol = $("#broadcast-list");
-    D.broadcasts.forEach((b) => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    D.broadcasts.forEach((b, i) => {
       const li = el("li");
-      li.append(el("time", { text: b.time }), el("span", { text: b.text }));
+      const text = el("span", { text: b.text });
+      li.append(el("time", { text: b.time }), text);
       ol.append(li);
+      if (i === 0 && !reduce) {
+        text.textContent = "";
+        text.setAttribute("aria-label", b.text);
+        const cursor = el("span", { class: "cursor", "aria-hidden": "true" });
+        const typed = document.createTextNode("");
+        text.append(typed, cursor);
+        let n = 0;
+        setTimeout(function tick() {
+          typed.data = b.text.slice(0, ++n);
+          if (n < b.text.length) setTimeout(tick, 38);
+        }, 1100); // 화면이 켜진 뒤
+      }
     });
     const ul = $("#notice-list");
     D.notices.forEach((t) => ul.append(el("li", { text: t })));
@@ -54,7 +70,7 @@
     ul.replaceChildren();
     const list = filtered();
     if (!list.length) {
-      ul.append(el("li", { class: "roster-empty", text: "조건에 맞는 학생이 없습니다." }));
+      ul.append(el("li", { class: "roster-empty", text: "찾는 학생이 없습니다. 검색어를 지우거나 다른 상태를 고르세요." }));
       return;
     }
     list.forEach((s) => {
@@ -66,10 +82,10 @@
         "aria-label": `${s.no} ${s.name}, ${STATUS_LABEL[s.status]}`,
       });
       btn.append(
-        el("span", { class: "card-state", "aria-hidden": "true" }),
+        el("span", { class: "card-state", "aria-hidden": "true", text: s.status === "hurt" ? "부상" : "" }),
         el("span", { class: "card-no", text: s.no }),
         el("span", { class: "card-name", text: s.name }),
-        el("span", { class: "card-meta", text: `${s.club} · ${s.weapon}` })
+        el("span", { class: "card-meta", text: s.weapon })
       );
       btn.addEventListener("click", () => select(s.id));
       li.append(btn);
@@ -126,11 +142,9 @@
     g.replaceChildren();
     const sel = D.students.find((s) => s.id === state.selected);
     if (!sel) {
-      $("#radar-target").textContent = "TARGET: -";
-      $("#radar-legend").textContent = "명부에서 학생을 선택하세요";
+      $("#radar-legend").textContent = "출석부에서 학생을 고르면 주변 생존자가 보입니다.";
       return;
     }
-    $("#radar-target").textContent = `TARGET: ${sel.pos}`;
     const o = parsePos(sel.pos);
     const RANGE = 4; // 격자 반경
     let count = 0;
@@ -148,13 +162,14 @@
       const x = (dx / RANGE) * 100, y = (dy / RANGE) * 100;
       const grp = el("g", { transform: `translate(${x.toFixed(1)} ${y.toFixed(1)})` }, true);
       grp.append(
-        el("circle", { r: 3, class: "blip-ring", style: `animation-delay:${(s.id % 5) * .3}s` }, true),
         el("circle", { r: 3.2, class: `blip ${s.status}` }, true),
         el("text", { x: 6, y: 3, class: "blip-label", text: s.name }, true)
       );
       g.append(grp);
     });
-    $("#radar-legend").textContent = `${sel.name} 반경 ${RANGE}칸 내 생존자 ${count}명 감지`;
+    $("#radar-legend").textContent = count
+      ? `${sel.name}(${sel.pos}) 주변 ${RANGE}칸 안에 ${count}명이 있습니다.`
+      : `${sel.name}(${sel.pos}) 주변 ${RANGE}칸 안에는 아무도 없습니다.`;
   }
 
   // ── hex stats ──────────────────────
@@ -193,18 +208,16 @@
     box.replaceChildren();
     const s = D.students.find((x) => x.id === state.selected);
     if (!s) {
-      box.append(el("p", { class: "detail-empty", text: "명부에서 학생을 선택하면 정보가 표시됩니다." }));
-      $("#detail-no").textContent = "FILE";
+      box.append(el("p", { class: "detail-empty", text: "출석부에서 학생을 고르면 기록이 여기에 뜹니다." }));
       return;
     }
-    $("#detail-no").textContent = `FILE ${s.no}`;
     const portrait = el("div", { class: `portrait ${s.status}`, "aria-hidden": "true", text: s.name[0] });
     const info = el("div");
     const h = el("h3", { class: "detail-name" });
     h.append(document.createTextNode(s.name), el("span", { class: `badge ${s.status}`, text: STATUS_LABEL[s.status] }));
     const dl = el("dl");
     const rows = [["출석번호", s.no], ["동아리", s.club], ["지급 무기", s.weapon], ["마지막 위치", s.pos]];
-    if (s.killedAt) rows.push(["탈락 시각", s.killedAt]);
+    if (s.killedAt) rows.push(["사망 시각", s.killedAt]);
     rows.forEach(([k, v]) => {
       const d = el("div");
       d.append(el("dt", { text: k }), el("dd", { text: v }));
