@@ -7,14 +7,21 @@
   <meta name="description" content="CW 배틀 로얄 팬 페이지. 레이더, 섬 지도, 출석부를 한 화면에서 봅니다." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="scene.css" />
+  <link rel="stylesheet" href="lcd.css" />
 </head>
 <body>
   <a class="skip" href="#roster">출석부로 건너뛰기</a>
 
   <div class="room">
+  <div class="calendar" aria-hidden="true">
+    <span class="cal-ring"></span>
+    <strong>11월</strong>
+    <span class="cal-grid" id="cal-grid"></span>
+  </div>
   <div class="monitor">
     <div class="sticky sticky-yellow" id="note-zones" aria-hidden="true"></div>
     <div class="sticky sticky-pink" aria-hidden="true"><span class="tape"></span>18:00 방송<br>꼭 듣기!!</div>
@@ -24,8 +31,9 @@
         <div class="screen-scroll" tabindex="-1">
 
   <header class="topbar">
-    <h1 id="game-title">CW BATTLE ROYALE</h1>
-    <p class="status-line" id="status-line" aria-live="polite"></p>
+    <span class="app-icon" aria-hidden="true"></span>
+    <h1><span id="game-title">CW BATTLE ROYALE</span> <small>프로그램 관리 시스템 2.1</small></h1>
+    <span class="win-btns" aria-hidden="true"><i></i><i></i><i></i></span>
   </header>
 
   <main class="board">
@@ -106,19 +114,28 @@
   </main>
 
   <footer class="foot">
-    <p>비공식 팬 페이지입니다. 인물과 설정은 모두 임시 데이터예요.</p>
+    <p class="status-line" id="status-line" aria-live="polite"></p>
+    <p class="foot-note">비공식 팬 페이지입니다. 인물과 설정은 모두 임시 데이터예요.</p>
   </footer>
 
         </div>
         <div class="screen-fx" aria-hidden="true"></div>
+        <div class="lcd-defects" aria-hidden="true">
+          <i class="dp dp-dead" style="left:23.4%;top:31.2%"></i>
+          <i class="dp dp-dead" style="left:71.9%;top:58.6%"></i>
+          <i class="dp dp-green" style="left:46.3%;top:17.8%"></i>
+          <i class="dp dp-white" style="left:84.1%;top:22.5%"></i>
+          <i class="stuck-line"></i>
+          <i class="band"></i>
+        </div>
       </div>
     </div>
     <div class="chin" aria-hidden="true">
-      <span class="chin-brand">CW<b>·</b>SYS <small>TERMINAL 9000</small></span>
-      <span class="grill"></span>
+      <span class="chin-brand">CW-1503T <small>15" TFT</small></span>
+      <span class="sticker">검수필<br>2003.04</span>
       <span class="controls">
-        <span class="knob"></span><span class="knob"></span>
-        <span class="power"><span class="led"></span>POWER</span>
+        <span class="osd">메뉴</span><span class="osd">◀</span><span class="osd">▶</span><span class="osd">자동</span>
+        <span class="power"><span class="led"></span></span>
       </span>
     </div>
   </div>
@@ -150,6 +167,8 @@
     <div class="mug"><span class="coffee"></span><span class="steam"></span><span class="steam"></span><span class="steam"></span></div>
   </div>
   <div class="grain" aria-hidden="true"></div>
+  <div class="photo-fx" aria-hidden="true"></div>
+  <div class="datestamp" aria-hidden="true">'03 11 22&nbsp;&nbsp;18:04</div>
   </div>
 
   <script src="data.js"></script>

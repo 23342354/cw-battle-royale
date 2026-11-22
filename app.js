@@ -22,10 +22,16 @@
     $("#class-label").textContent = D.game.classLabel;
     const dead = D.students.filter((s) => s.status === "dead").length;
     const line = $("#status-line");
+    const alive = el("span");
+    alive.append(el("strong", { text: `${D.students.length - dead}명 생존` }), document.createTextNode(` / ${D.students.length}명`));
     line.replaceChildren(
-      document.createTextNode(`${D.game.day}일차 ${D.game.time} 현재, ${D.students.length}명 중 `),
-      el("strong", { text: `${D.students.length - dead}명 생존` })
+      el("span", { text: `${D.game.day}일차 ${D.game.time}` }),
+      alive,
+      el("span", { text: `금지구역 ${D.dangerZones.length}곳` })
     );
+    // 벽 달력 (장식): 22일에 빨간 동그라미
+    const cal = $("#cal-grid");
+    if (cal) for (let d = 1; d <= 30; d++) cal.append(el("i", { text: d, class: d === 22 ? "today" : d % 7 === 2 ? "sun" : "" }));
   }
 
   // 페이지에서 유일하게 스스로 움직이는 순간: 최신 방송 한 줄이 찍힌다
